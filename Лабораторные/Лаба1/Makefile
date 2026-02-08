@@ -10,13 +10,13 @@ SER_TARGET = obj/server.o
 all: $(CLI_TARGET) $(SER_TARGET)
 
 $(CLI_TARGET): $(CLI_SOURCE)
-	$(CC) -o $< 
+	$(CC) $< -o $@
 
 $(SER_TARGET): $(SER_SOURCE)
-	$(CC) -o $< 
+	$(CC) $< -o $@
 
 client-run: $(CLI_TARGET)
-	./$(LAB1_TARGET)
+	./$(CLI_TARGET)
 
 server-run: $(SER_TARGET)
 	./$(SER_TARGET)

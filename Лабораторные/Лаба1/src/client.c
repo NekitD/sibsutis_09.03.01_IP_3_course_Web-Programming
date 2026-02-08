@@ -5,16 +5,17 @@
 #include <netdb.h>
 #include <time.h>
 
+#define BUFF_LEN 15
 
 int main()
 {
     double i = 0;
-    int client_socket = 0
-    char* hostname
-    int port = 0
+    int client_socket = 0;
+    char* hostname;
+    int port = 0;
 
-    sockaddr_in client_addr
-    sockaddr_in server_addr
+    struct sockaddr_in client_addr;
+    struct sockaddr_in server_addr;
     struct hostent *hp, *gethostbyname();
 
     //---------------------------------------------------------------------
@@ -23,43 +24,44 @@ int main()
 
     if(client_socket < 0){
         printf("CLIENT SOCKET CREATION FAILED!");
-        return -1
+        return -1;
     }
 
-    bzero((char*)client_addr, (sizeof(sockaddr_in)))
+    bzero((char*)client_addr, (sizeof(struct sockaddr_in)));
     client_addr.sin_family = AF_INET;
-    client_addr.s_addr = htonl(INADDR_ANY);
+    client_addr.sin_addr = htonl(INADDR_ANY);
     server_addr.sin_port = 0;
     
-    if(bind(client_socket, &c_socket_addr, sizeof(sockaddr_in)) < 0){
+    if(bind(client_socket, &client_addr, sizeof(struct sockaddr_in)) < 0){
         printf("CLIENT SOCKET INIT FAILED!");
-        return -1
+        return -1;
     }
     //---------------------------------------------------------------------
     printf("HELLO USER! LET'S HAVE SOME FUN \n");
     printf("Input some value: ");
-    scanf("%f\n", i);
+    scanf("%lf\n", &i);
     printf("\nInput hostname (no spaces): ");
-    scanf("%s\n", hostname);
+    scanf("%s\n", &hostname);
     printf("\nInput port: ");
-    scanf("%s\n", port);
+    scanf("%d\n", &port);
     //---------------------------------------------------------------------
 
-    bzero((char*)server_addr, (sizeof(sockaddr_in)))
+    bzero((char*)server_addr, (sizeof(struct sockaddr_in)));
     server_addr.sin_family = AF_INET;
-    hp = gethostbyname(hostname)
-    bcopy( hp -> h_addr, &servAddr.sin_addr, hp -> h_length ) ;
+    hp = gethostbyname(hostname);
+    bcopy( hp -> h_addr, &server_addr.sin_addr, hp -> h_length ) ;
     server_addr.sin_port = htons(port);
 
     //---------------------------------------------------------------------
     int counter;
     for(counter = 0; counter < i; counter++){
-        if( sendto ( sock, message, i, sizeof(double) , &server_addr , sizeof(sockaddr_in) ) < 0 )
+        if( sendto ( server_socket, msg, i, BUFF_LEN , &server_addr , sizeof(struct sockaddr_in) ) < 0 )
             {
                 printf("SEND TO SERVER FAILED!");
                 break;
             }
         printf("%f was sent.\n", i);
+        sleep(i);
     }
 
     return 0;
