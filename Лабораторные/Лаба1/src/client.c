@@ -5,7 +5,7 @@
 #include <netdb.h>
 #include <time.h>
 
-#define BUFF_LEN 15
+#define BUFF_LEN 81
 
 int main()
 {
@@ -13,6 +13,7 @@ int main()
     int client_socket = 0;
     char* hostname;
     int port = 0;
+    char msg[BUFF_LEN] = "";
 
     struct sockaddr_in client_addr;
     struct sockaddr_in server_addr;
@@ -27,9 +28,9 @@ int main()
         return -1;
     }
 
-    bzero((char*)client_addr, (sizeof(struct sockaddr_in)));
+    bzero((char*)&client_addr, (sizeof(struct sockaddr_in)));
     client_addr.sin_family = AF_INET;
-    client_addr.sin_addr = htonl(INADDR_ANY);
+    client_addr.sin_addr.s_addr = htonl(INADDR_ANY);
     server_addr.sin_port = 0;
     
     if(bind(client_socket, &client_addr, sizeof(struct sockaddr_in)) < 0){
@@ -40,22 +41,23 @@ int main()
     printf("HELLO USER! LET'S HAVE SOME FUN \n");
     printf("Input some value: ");
     scanf("%lf\n", &i);
+    sprintf(msg, "%.2f", i);
     printf("\nInput hostname (no spaces): ");
     scanf("%s\n", &hostname);
     printf("\nInput port: ");
     scanf("%d\n", &port);
     //---------------------------------------------------------------------
 
-    bzero((char*)server_addr, (sizeof(struct sockaddr_in)));
+    bzero((char*)&server_addr, (sizeof(struct sockaddr_in)));
     server_addr.sin_family = AF_INET;
     hp = gethostbyname(hostname);
-    bcopy( hp -> h_addr, &server_addr.sin_addr, hp -> h_length ) ;
+    bcopy(hp->h_addr, &server_addr.sin_addr, hp->h_length) ;
     server_addr.sin_port = htons(port);
 
     //---------------------------------------------------------------------
     int counter;
     for(counter = 0; counter < i; counter++){
-        if( sendto ( server_socket, msg, i, BUFF_LEN , &server_addr , sizeof(struct sockaddr_in) ) < 0 )
+        if( sendto (client_socket, msg, BUFF_LEN, 0 , &server_addr , sizeof(struct sockaddr_in) ) < 0 )
             {
                 printf("SEND TO SERVER FAILED!");
                 break;
@@ -64,5 +66,18 @@ int main()
         sleep(i);
     }
 
+    
+    char* answer = "Server sent answer - ";
+    int length = 0;
+    for( ; ; ) {
+        length = sizeof(server_addr) ;
+        bzero(msg, sizeof(BUFF_LEN) );
+        if ( (recvfrom(client_socket, msg, BUFF_LEN, 0 , &server_addr, &length) ) < 0 )
+        { 
+            printf("Invalid server socket.");
+            break;
+        }
+        printf( "%s\n", answer);
+    }
     return 0;
 }

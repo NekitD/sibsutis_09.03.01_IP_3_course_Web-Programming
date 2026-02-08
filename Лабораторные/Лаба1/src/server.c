@@ -5,7 +5,7 @@
 #include <netdb.h>
 #include <time.h>
 
-#define BUFF_LEN 15
+#define BUFF_LEN 81
 
 int main()
 {
@@ -15,7 +15,7 @@ int main()
     struct sockaddr_in client_addr;
     struct sockaddr_in server_addr;
 
-    char msg[BUFF_LEN];
+    char msg[BUFF_LEN] = "";
     int msgLength = 0;
 
     //--------------------------------------------------------
@@ -26,9 +26,9 @@ int main()
         return -1;
     }
 
-    bzero( (char *) &server_addr, sizeof(struct sockaddr_in));
+    bzero((char*)&server_addr, sizeof(struct sockaddr_in));
     server_addr.sin_family = AF_INET;
-    server_addr.sin_addr.s_addr = htonl( INADDR_ANY );
+    server_addr.sin_addr.s_addr = htonl(INADDR_ANY);
     server_addr.sin_port = 0;
     
     if(bind(server_socket, &server_addr, sizeof(struct sockaddr_in)) < 0){
@@ -43,20 +43,23 @@ int main()
         printf("FAILED TO GET THE SERVER PORT!");
         return -1;
     }
-    printf("SERVER: port - % d\n", ntohs(server_addr.sin_port ) )
+    printf("SERVER: port - % d\n\n", ntohs(server_addr.sin_port ));
+
+    char* answer = "SERVER: I received - ";
     for( ; ; ) {
-        length = sizeof(clientAddr ) ;
+        length = sizeof(client_addr ) ;
         bzero(msg, sizeof(BUFF_LEN) );
-        if ( (msglength = recvfrom(client_socket, msg, BUFF_LEN, 0 , &clientAddr, &length) ) < 0 )
+        if ( (msgLength = recvfrom(server_socket, msg, BUFF_LEN, 0 , &client_addr, &length) ) < 0 )
         { 
             printf("Invalid client socket.");
             break;
         }
-        printf( "SERVER: client IP: %s\n", inet_ntoa(clientAddr.sin_addr) ) ;
-        printf( "SERVER: client port: %d\n", ntohs(clientAddr.sin_port) ) ;
+        strcat(answer, msg);
+        printf( "SERVER: client IP: %s\n", inet_ntoa(client_addr.sin_addr) ) ;
+        printf( "SERVER: client port: %d\n", ntohs(client_addr.sin_port) ) ;
         printf( "SERVER: message length - %d\n", msgLength);
         printf( "SERVER: message: %s\n\n", msg);
-        sendto ( server_addr, msg, i*i, sizeof(double) , &server_addr , sizeof(struct sockaddr_in) )
+        sendto ( server_socket, answer, BUFF_LEN, 0 , &client_addr , sizeof(struct sockaddr_in) );
     }
     return 0;
 }
