@@ -60,7 +60,7 @@ int main()
         printf( "SERVER: client port: %d\n", ntohs(client_addr.sin_port) ) ;
         printf( "SERVER: message length - %d\n", msgLength);
         printf( "SERVER: message: %s\n\n", msg);
-        sendto ( server_socket, answer, BUFF_LEN, 0 , &client_addr , sizeof(struct sockaddr_in) );
+        sendto(server_socket, answer, BUFF_LEN, 0 , &client_addr , sizeof(struct sockaddr_in));
     }
     return 0;
 }
