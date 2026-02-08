@@ -47,7 +47,8 @@ int main()
     }
     printf("SERVER: port - % d\n\n", ntohs(server_addr.sin_port ));
 
-    char answer[BUFF_LEN] = "SERVER: I received - ";
+    char ans_b[BUFF_LEN] = "SERVER: I received - ";
+    char answer[BUFF_LEN] = "";
     for( ; ; ) {
         length = sizeof(client_addr ) ;
         bzero(msg, sizeof(BUFF_LEN) );
@@ -57,6 +58,7 @@ int main()
             printf("Invalid client socket.");
             break;
         }
+        strcat(answer, ans_b);
         strcat(answer, msg);
         printf("SERVER: client IP: %d\n", inet_ntoa(client_addr.sin_addr) ) ;
         printf("SERVER: client port: %d\n", ntohs(client_addr.sin_port) ) ;

@@ -16,6 +16,7 @@ int main()
     char hostname[80];
     int port = 0;
     char msg[BUFF_LEN] = "";
+    char s_msg[BUFF_LEN] = "";
 
     struct sockaddr_in client_addr;
     struct sockaddr_in server_addr;
@@ -73,13 +74,13 @@ int main()
         printf("%.2f was sent.\n", i);
 
         length = sizeof(server_addr) ;
-        bzero(msg, sizeof(BUFF_LEN) );
-        if ((recvfrom(client_socket, msg, BUFF_LEN, 0 , &server_addr, &length) ) < 0 )
+        bzero(s_msg, sizeof(BUFF_LEN) );
+        if ((recvfrom(client_socket, s_msg, BUFF_LEN, 0 , &server_addr, &length) ) < 0)
         { 
             printf("Invalid server socket.");
             break;
         } else {
-            printf( "Server answered -  %s\n", msg);
+            printf( "Server answered -  %s\n", s_msg);
         }
         sleep(i);
     }
