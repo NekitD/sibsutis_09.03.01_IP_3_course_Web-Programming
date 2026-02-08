@@ -62,6 +62,7 @@ int main()
     server_addr.sin_port = htons(port);
 
     //---------------------------------------------------------------------
+    int length = 0;
     int counter;
     for(counter = 0; counter < i; counter++){
         if( sendto(client_socket, msg, BUFF_LEN, 0 , &server_addr , sizeof(struct sockaddr_in) ) < 0)
@@ -70,22 +71,19 @@ int main()
                 break;
             }
         printf("%.2f was sent.\n", i);
-        sleep(i);
-    }
 
-    
-    char* answer = "Server sent answer - ";
-    int length = 0;
-    for( ; ; ) {
         length = sizeof(server_addr) ;
         bzero(msg, sizeof(BUFF_LEN) );
         if ((recvfrom(client_socket, msg, BUFF_LEN, 0 , &server_addr, &length) ) < 0 )
         { 
             printf("Invalid server socket.");
             break;
+        } else {
+            printf( "Server answered -  %s\n", msg);
         }
-        printf( "%s\n", answer);
+        sleep(i);
     }
+
     close(client_socket);
     return 0;
 }
