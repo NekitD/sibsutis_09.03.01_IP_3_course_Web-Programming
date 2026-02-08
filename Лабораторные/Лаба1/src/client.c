@@ -5,6 +5,7 @@
 #include <netdb.h>
 #include <time.h>
 #include <string.h>
+#include <unistd.h> 
 
 #define BUFF_LEN 81
 
@@ -12,7 +13,7 @@ int main()
 {
     double i = 0;
     int client_socket = 0;
-    char* hostname;
+    char hostname[80];
     int port = 0;
     char msg[BUFF_LEN] = "";
 
@@ -41,17 +42,22 @@ int main()
     //---------------------------------------------------------------------
     printf("HELLO USER! LET'S HAVE SOME FUN \n");
     printf("Input some value: ");
-    scanf("%lf\n", &i);
+    scanf("%lf", &i);
     sprintf(msg, "%.2f", i);
     printf("\nInput hostname (no spaces): ");
-    scanf("%s\n", &hostname);
+    scanf("%s", &hostname);
     printf("\nInput port: ");
-    scanf("%d\n", &port);
+    scanf("%d", &port);
     //---------------------------------------------------------------------
 
     bzero((char*)&server_addr, (sizeof(struct sockaddr_in)));
     server_addr.sin_family = AF_INET;
     hp = gethostbyname(hostname);
+    if (hp == NULL) {
+        printf("Cannot resolve hostname: %s\n", hostname);
+        close(client_socket);
+        return -1;
+    }
     bcopy(hp->h_addr, &server_addr.sin_addr, hp->h_length) ;
     server_addr.sin_port = htons(port);
 
@@ -63,7 +69,7 @@ int main()
                 printf("SEND TO SERVER FAILED!");
                 break;
             }
-        printf("%f was sent.\n", i);
+        printf("%.2f was sent.\n", i);
         sleep(i);
     }
 
@@ -73,12 +79,13 @@ int main()
     for( ; ; ) {
         length = sizeof(server_addr) ;
         bzero(msg, sizeof(BUFF_LEN) );
-        if ( (recvfrom(client_socket, msg, BUFF_LEN, 0 , &server_addr, &length) ) < 0 )
+        if ((recvfrom(client_socket, msg, BUFF_LEN, 0 , &server_addr, &length) ) < 0 )
         { 
             printf("Invalid server socket.");
             break;
         }
         printf( "%s\n", answer);
     }
+    close(client_socket);
     return 0;
 }

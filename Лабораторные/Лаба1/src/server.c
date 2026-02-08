@@ -5,6 +5,7 @@
 #include <netdb.h>
 #include <time.h>
 #include <string.h>
+#include <unistd.h> 
 
 #define BUFF_LEN 81
 
@@ -46,7 +47,7 @@ int main()
     }
     printf("SERVER: port - % d\n\n", ntohs(server_addr.sin_port ));
 
-    char* answer = "SERVER: I received - ";
+    char answer[25] = "SERVER: I received - ";
     for( ; ; ) {
         length = sizeof(client_addr ) ;
         bzero(msg, sizeof(BUFF_LEN) );
@@ -56,11 +57,12 @@ int main()
             break;
         }
         strcat(answer, msg);
-        printf( "SERVER: client IP: %d\n", inet_ntoa(client_addr.sin_addr) ) ;
-        printf( "SERVER: client port: %d\n", ntohs(client_addr.sin_port) ) ;
-        printf( "SERVER: message length - %d\n", msgLength);
-        printf( "SERVER: message: %s\n\n", msg);
+        printf("SERVER: client IP: %d\n", inet_ntoa(client_addr.sin_addr) ) ;
+        printf("SERVER: client port: %d\n", ntohs(client_addr.sin_port) ) ;
+        printf("SERVER: message length - %d\n", msgLength);
+        printf("SERVER: message: %s\n\n", msg);
         sendto(server_socket, answer, BUFF_LEN, 0 , &client_addr , sizeof(struct sockaddr_in));
     }
+    close(server_socket);
     return 0;
 }
