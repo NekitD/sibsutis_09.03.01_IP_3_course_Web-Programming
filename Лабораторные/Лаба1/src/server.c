@@ -47,10 +47,11 @@ int main()
     }
     printf("SERVER: port - % d\n\n", ntohs(server_addr.sin_port ));
 
-    char answer[25] = "SERVER: I received - ";
+    char answer[BUFF_LEN] = "SERVER: I received - ";
     for( ; ; ) {
         length = sizeof(client_addr ) ;
         bzero(msg, sizeof(BUFF_LEN) );
+        bzero(answer, sizeof(BUFF_LEN));
         if ( (msgLength = recvfrom(server_socket, msg, BUFF_LEN, 0 , &client_addr, &length) ) < 0 )
         { 
             printf("Invalid client socket.");
