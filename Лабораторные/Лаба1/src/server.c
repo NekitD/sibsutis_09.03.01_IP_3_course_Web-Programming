@@ -6,6 +6,7 @@
 #include <time.h>
 #include <string.h>
 #include <unistd.h> 
+#include <arpa/inet.h>
 
 #define BUFF_LEN 81
 
@@ -60,7 +61,7 @@ int main()
         }
         strcat(answer, ans_b);
         strcat(answer, msg);
-        printf("SERVER: client IP - %d\n", inet_ntoa(client_addr.sin_addr) ) ;
+        printf("SERVER: client IP - %s\n", inet_ntoa(client_addr.sin_addr)) ;
         printf("SERVER: client port - %d\n", ntohs(client_addr.sin_port) ) ;
         printf("SERVER: message length - %d\n", msgLength);
         printf("SERVER: message - %s\n\n", msg);
