@@ -60,10 +60,10 @@ int main()
         }
         strcat(answer, ans_b);
         strcat(answer, msg);
-        printf("SERVER: client IP: %d\n", inet_ntoa(client_addr.sin_addr) ) ;
-        printf("SERVER: client port: %d\n", ntohs(client_addr.sin_port) ) ;
+        printf("SERVER: client IP - %d\n", inet_ntoa(client_addr.sin_addr) ) ;
+        printf("SERVER: client port - %d\n", ntohs(client_addr.sin_port) ) ;
         printf("SERVER: message length - %d\n", msgLength);
-        printf("SERVER: message: %s\n\n", msg);
+        printf("SERVER: message - %s\n\n", msg);
         sendto(server_socket, answer, BUFF_LEN, 0 , &client_addr , sizeof(struct sockaddr_in));
     }
     close(server_socket);

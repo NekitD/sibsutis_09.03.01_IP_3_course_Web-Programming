@@ -10,18 +10,18 @@ SER_TARGET = obj/server.o
 all: $(CLI_TARGET) $(SER_TARGET)
 
 $(CLI_TARGET): $(CLI_SOURCE)
-	$(CC) $< -o $@
+	@ $(CC) $< -o $@
 
 $(SER_TARGET): $(SER_SOURCE)
-	$(CC) $< -o $@
+	@ $(CC) $< -o $@
 
 client-run: $(CLI_TARGET)
-	./$(CLI_TARGET)
+	@ ./$(CLI_TARGET)
 
 server-run: $(SER_TARGET)
-	./$(SER_TARGET)
+	@ ./$(SER_TARGET)
 
 clean:
-	rm obj/*
+	@ rm obj/*
 
 .PHONY: client-run server-run clean
