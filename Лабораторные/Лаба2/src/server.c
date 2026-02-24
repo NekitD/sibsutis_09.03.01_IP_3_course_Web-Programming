@@ -54,26 +54,40 @@ int main()
 
     char ans_b[BUFF_LEN] = "SERVER: I received - ";
     char answer[BUFF_LEN] = "";
+    pid_t child;
     for( ; ; ) {
         socket_for_client = accept(server_socket, 0, 0);
+        close(server_socket);
         if (socket_for_client < 0) {
             printf("ACCEPT FAILED");
+            return 1;
         }
-        length = sizeof(socket_for_client) ;
-        for( ; ; ) {
-            bzero(msg, sizeof(BUFF_LEN));
-            bzero(answer, sizeof(BUFF_LEN));
-            if ( (msgLength = recv(socket_for_client, msg, BUFF_LEN, 0) ) < 0 )
-            { 
-                printf("Invalid client socket.\n");
-                break;
+        child = fork();
+        if (child < 0) {
+            printf("FORK FAILED");
+            return 1;
+        }
+
+        if (child == 0){
+            close(server_socket);
+            length = sizeof(socket_for_client) ;
+            for( ; ; ) {
+                bzero(msg, sizeof(BUFF_LEN));
+                bzero(answer, sizeof(BUFF_LEN));
+                if ( (msgLength = recv(socket_for_client, msg, BUFF_LEN, 0) ) < 0 )
+                { 
+                    printf("Invalid client socket.\n");
+                    break;
+                }
+                strcat(answer, ans_b);
+                strcat(answer, msg);
+                printf("SERVER: socket for client - %d\n", socket_for_client) ;
+                printf("SERVER: message length - %d\n", msgLength);
+                printf("SERVER: message - %s\n\n", msg);
+                send(socket_for_client, answer, BUFF_LEN, 0);
             }
-            strcat(answer, ans_b);
-            strcat(answer, msg);
-            printf("SERVER: socket for client - %d\n", socket_for_client) ;
-            printf("SERVER: message length - %d\n", msgLength);
-            printf("SERVER: message - %s\n\n", msg);
-            send(socket_for_client, answer, BUFF_LEN, 0);
+            close(socket_for_client);
+            return 0;
         }
         close(socket_for_client);
     }
