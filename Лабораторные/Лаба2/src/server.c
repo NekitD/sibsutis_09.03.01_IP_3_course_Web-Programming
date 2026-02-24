@@ -7,8 +7,17 @@
 #include <string.h>
 #include <unistd.h> 
 #include <arpa/inet.h>
+#include <signal.h>
+#include <sys/resource.h>
+#include <sys/wait.h>
 
 #define BUFF_LEN 81
+
+void reaper( int sig )
+{ 
+    int status;
+    while( wait3( &status, WNOHANG, (struct rusage *) 0 ) >= 0 ) ;
+}
 
 int main()
 {
@@ -55,6 +64,7 @@ int main()
     char ans_b[BUFF_LEN] = "SERVER: I received - ";
     char answer[BUFF_LEN] = "";
     pid_t child;
+    signal(SIGCHLD, reaper);
     for( ; ; ) {
         socket_for_client = accept(server_socket, 0, 0);
         if (socket_for_client < 0) {
