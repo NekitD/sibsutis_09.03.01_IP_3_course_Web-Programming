@@ -46,9 +46,9 @@ int main()
         printf("FAILED TO GET THE SERVER PORT!\n");
         return -1;
     }
-    printf("SERVER: port - % d\n\n", ntohs(server_addr.sin_port ));
+    printf("SERVER: port - %d\n\n", ntohs(server_addr.sin_port ));
     if (listen(server_socket, 5) < 0){
-        printf("LISTENING BEGIN FAILED");
+        printf("LISTENING BEGIN FAILED\n");
         return -1;
     }
 
@@ -57,15 +57,14 @@ int main()
     pid_t child;
     for( ; ; ) {
         socket_for_client = accept(server_socket, 0, 0);
-        close(server_socket);
         if (socket_for_client < 0) {
-            printf("ACCEPT FAILED");
-            return 1;
+            printf("ACCEPT FAILED\n");
+            return -1;
         }
         child = fork();
         if (child < 0) {
-            printf("FORK FAILED");
-            return 1;
+            printf("FORK FAILED\n");
+            return -1;
         }
 
         if (child == 0){
