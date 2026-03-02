@@ -21,7 +21,7 @@ int handler(int client_socket) {
     bzero(msg, BUFF_LEN);
     bzero(answer, BUFF_LEN);
     
-    msgLength = recv(client_socket, msg, BUFF_LEN - 1, 0);
+    msgLength = recv(client_socket, msg, BUFF_LEN, 0);
     
     if (msgLength <= 0) {
         if (msgLength == 0) {
@@ -38,7 +38,7 @@ int handler(int client_socket) {
     
     printf("SERVER: socket for client - %d\n", client_socket);
     printf("SERVER: message length - %d\n", msgLength);
-    printf("SERVER: message - %s\n", msg);
+    printf("SERVER: message - %s\n\n", msg);
     
     send(client_socket, answer, strlen(answer), 0);
     
@@ -117,9 +117,9 @@ int main()
         for(fd = 0; fd < fd_n; fd++){
             if(fd != server_socket && FD_ISSET(fd, &read_ds)){
                 if(handler(fd) < 0){
-                        close(fd);
-                        FD_CLR(fd, &active_ds);
-                        printf("Socket %d closed and removed\n", fd);
+                    close(fd);
+                    FD_CLR(fd, &active_ds);
+                    printf("Socket %d closed and removed\n\n", fd);
                 }
             }
         }
