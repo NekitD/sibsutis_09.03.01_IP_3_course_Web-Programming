@@ -69,8 +69,7 @@ int main()
 
     //---------------------------------------------------------------------
     int length = 0;
-    int counter;
-    for(counter = 0; counter < i; counter++){
+    for(;;){
         if(send(client_socket, msg, BUFF_LEN, 0) < 0)
             {
                 printf("SEND TO SERVER FAILED!\n");

@@ -64,8 +64,7 @@ int main()
 
     //---------------------------------------------------------------------
     int length = 0;
-    int counter;
-    for(counter = 0; counter < i; counter++){
+    for(;;){
         if( sendto(client_socket, msg, BUFF_LEN, 0 , &server_addr , sizeof(struct sockaddr_in) ) < 0)
             {
                 printf("SEND TO SERVER FAILED!");
