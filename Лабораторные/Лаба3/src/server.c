@@ -11,21 +11,16 @@
 
 #define BUFF_LEN 81
 
-int server_socket = 0;
-int socket_for_client;
+pthread_mutex_t mut;
 
-void* client_thread(){
-    char msg[BUFF_LEN] = "";
-    int msgLength = 0;
-    char ans_b[BUFF_LEN] = "SERVER: I received - ";
-    char answer[BUFF_LEN] = "";
-    socket_for_client = accept(server_socket, 0, 0);
-    if (socket_for_client < 0) {
-        printf("ACCEPT FAILED\n");
-        return -1;
-    }
-    int length = sizeof(socket_for_client) ;
+char msg[BUFF_LEN] = "";
+int msgLength = 0;
+char ans_b[BUFF_LEN] = "SERVER: I received - ";
+char answer[BUFF_LEN] = "";
+
+void* client_thread(int socket_for_client){
     for( ; ; ) {
+        pthread_mutex_lock(&mut);
         bzero(msg, sizeof(BUFF_LEN));
         bzero(answer, sizeof(BUFF_LEN));
         if ( (msgLength = recv(socket_for_client, msg, BUFF_LEN, 0) ) < 0 )
@@ -39,15 +34,20 @@ void* client_thread(){
         printf("SERVER: message length - %d\n", msgLength);
         printf("SERVER: message - %s\n\n", msg);
         send(socket_for_client, answer, BUFF_LEN, 0);
+        pthread_mutex_unlock(&mut);
     }
     close(socket_for_client);
-    return 0;
+    return;
 }
 
 
 int main()
 {
     struct sockaddr_in server_addr;
+    int server_socket = 0;
+    int socket_for_client = 0;
+
+    pthread_mutex_init(&mut, 0);
 
     //--------------------------------------------------------
     server_socket = socket(AF_INET, SOCK_STREAM, 0);
@@ -81,8 +81,16 @@ int main()
     }
 
     for( ; ; ) {
+        socket_for_client = accept(server_socket, 0, 0);
+        if (socket_for_client < 0) {
+            printf("ACCEPT FAILED\n");
+            return -1;
+        }
         pthread_t ct;
-        pthread_create(ct, NULL, &client_thread, NULL);
+        if (pthread_create(&ct, NULL, &client_thread, (void*)socket_for_client) < 0){
+            printf("THREAD CREATION ERROR");
+            return -1;
+        }
         pthread_join(ct, NULL);
     }
     close(server_socket);
