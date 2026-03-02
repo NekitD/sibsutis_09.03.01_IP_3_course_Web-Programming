@@ -34,9 +34,14 @@ void* client_thread(int socket_for_client){
         strcat(answer, ans_b);
         strcat(answer, msg);
         pthread_mutex_lock(&mut);
+        FILE* fp = fopen("STORAGE.txt", "a");
         printf("SERVER: socket for client - %d\n", socket_for_client) ;
+        fprintf(fp,"SERVER: socket for client - %d\n", socket_for_client);
         printf("SERVER: message length - %d\n", msgLength);
+        fprintf(fp, "SERVER: message length - %d\n", msgLength);
         printf("SERVER: message - %s\n\n", msg);
+        fprintf(fp, "SERVER: message - %s\n\n", msg);
+        fclose(fp);
         pthread_mutex_unlock(&mut);
         send(socket_for_client, answer, BUFF_LEN, 0);  
     }
