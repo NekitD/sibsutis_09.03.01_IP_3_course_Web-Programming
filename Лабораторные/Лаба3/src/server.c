@@ -13,12 +13,12 @@
 
 pthread_mutex_t mut;
 
-char msg[BUFF_LEN] = "";
-int msgLength = 0;
-char answer[BUFF_LEN] = "";
 const char ans_b[BUFF_LEN] = "SERVER: I received - ";
 
 void* client_thread(int socket_for_client){
+    char msg[BUFF_LEN] = "";
+    int msgLength = 0;
+    char answer[BUFF_LEN] = "";
     for( ; ; ) {
         bzero(msg, sizeof(BUFF_LEN));
         bzero(answer, sizeof(BUFF_LEN));
