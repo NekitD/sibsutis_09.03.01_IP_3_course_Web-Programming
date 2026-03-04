@@ -98,6 +98,10 @@ int main()
             printf("THREAD CREATION ERROR");
             continue;
         }
+        if(pthread_detach(&ct) < 0){
+            printf("THREAD DETACH ERROR");
+            continue;
+        }
     }
     close(server_socket);
     pthread_mutex_destroy(&mut);
