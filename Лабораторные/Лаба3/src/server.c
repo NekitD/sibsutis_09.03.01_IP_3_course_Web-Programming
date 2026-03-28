@@ -78,7 +78,7 @@ int main()
     //------------------------------------------------------------
     int length = 0;
     length = sizeof(server_addr);
-    if (getsockname(server_socket, &server_addr, &length ))
+    if (getsockname(server_socket, &server_addr, &length ) < 0)
     {
         printf("FAILED TO GET THE SERVER PORT!\n");
         return -1;
