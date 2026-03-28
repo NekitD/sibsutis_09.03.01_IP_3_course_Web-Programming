@@ -324,3 +324,18 @@ void Game::print_players(){
         }
     } 
 }
+
+int Game::getStatus(){
+    return status;
+}
+
+int Game::setStatus(int ns){
+    status = ns;
+}
+
+void Game::addPlayer(char* nick){
+    Player* p = new Player(nick, p_num + 1);
+    g_players->push_back(p);
+    p_num++;
+    cout << nick << "присоединился к игре!" << endl;
+}

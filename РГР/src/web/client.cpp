@@ -36,9 +36,12 @@ int main()
         cout << "НЕ УДАЛОСЬ ИНИЦИАЛИЗИРОВАТЬ КЛИЕНТА!" << endl;
         return -1;
     }
-    cout << "Input hostname of the game (no spaces): ";
+    string nick;
+    cout << "Введите ваш ник: ";
+    cin >> nick;
+    cout << "Введите адрес игры (без пробелов): ";
     cin >> g_host;
-    cout << endl << "Input port of the game: ";
+    cout << endl << "Введите порт игры: ";
     cin >> g_port;
 
     hp = gethostbyname(g_host);
@@ -48,12 +51,19 @@ int main()
     s_addr.sin_port = htons(g_port);
 
         if (connect(c_sock, (sockaddr*)&s_addr, sizeof(struct sockaddr_in)) < 0) {
-        printf("CONNECTION TO SERVER FAILED!\n");
+        printf("СОЕДИНЕНИЕ С СЕРВЕРОМ НЕ УДАЛОСЬ!\n");
         return -1;
     }
+    char msg[BUFF_LEN] = "";
 
+    strcat(msg, nick.c_str());
+    strcat(msg, "|join");
+
+    if(send(c_sock, msg, BUFF_LEN, 0) < 0){
+        cout << "НЕ УДАЛОСЬ ОТПРАВИТЬ ДАННЫЕ ИГРОКА!" << endl;
+        return -1;
+    }
     //---------------------------------------------------------------------
-    char* msg[BUFF_LEN];
     for(;;){
         if ((recv(c_sock, msg, BUFF_LEN, 0) ) < 0)
         { 

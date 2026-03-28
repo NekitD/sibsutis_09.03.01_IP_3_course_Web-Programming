@@ -84,7 +84,8 @@ enum player_status {
     PRE_TO_PLAY = 0,
     READY_TO_PLAY,
     EMPLOYER,
-    ANSWERING
+    ANSWERING,
+    LEFT
 };
 
 
@@ -152,6 +153,9 @@ class Game
         void print_skills();
         void print_emoji();
         void print_players();
+        int getStatus();
+        int setStatus(int ns);
+        void addPlayer(char* nick);
 
     private:
         int p_num = 0;
