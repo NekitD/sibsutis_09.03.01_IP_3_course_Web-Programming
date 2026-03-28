@@ -1,4 +1,6 @@
 CC = g++
+CFLAGS = -Wall -g -I../../include
+CPPFLAGS = -MP -MMD
 
 SRC = src
 OBJ = obj
@@ -7,51 +9,53 @@ INCLUDE = include
 GAME_DIR = game
 WEB_DIR = web
 
-GAME_LIB = $(INCLUDE)/game.a
 GAME_SRC = $(SRC)/$(GAME_DIR)/game.cpp
-GAME_OBJ = $(OBJ)/$(GAME_DIR)/game.o
+CLIENT_SRC = $(SRC)/$(WEB_DIR)/client.cpp
+SERVER_SRC = $(SRC)/$(WEB_DIR)/server.cpp
+
+GAME_OBJ_FILE = $(OBJ)/$(GAME_DIR)/game.o
 GAME_DEPS = $(OBJ)/$(GAME_DIR)/game.d
+CLIENT_OBJ = $(OBJ)/$(WEB_DIR)/client.o
+SERVER_OBJ = $(OBJ)/$(WEB_DIR)/server.o
+CLIENT_DEPS = $(OBJ)/$(WEB_DIR)/client.d
+SERVER_DEPS = $(OBJ)/$(WEB_DIR)/server.d
 
-CLIENT_SOURCE = $(SRC)/$(WEB_DIR)/client.cpp
-SERVER_SOURCE = $(SRC)/$(WEB_DIR)/server.cpp
+CLIENT_TARGET = client
+SERVER_TARGET = server
+GAME_LIB = $(OBJ)/$(GAME_DIR)/libgame.a
 
-CLIENT_TARGET = WEB_OBJ/client.o
-SERVER_TARGET = WEB_OBJ/server.o
-
-
-WEB_SRC = $(CLIENT_SOURCE) $(SERVER_SOURCE)
-WEB_OBJ = $(OBJ)/$(WEB_DIR)
-
+DIRS = $(OBJ)/$(GAME_DIR) $(OBJ)/$(WEB_DIR)
+$(shell mkdir -p $(DIRS))
 
 .PHONY: all clean game player
 
-all: $(GAME_OBJ) $(GAME_LIB) $(SERVER_TARGET) $(CLIENT_TARGET)
+all: $(GAME_LIB) $(CLIENT_TARGET) $(SERVER_TARGET)
 
-$(GAME_OBJ): $(GAME_SRC)
-	@$(CC) -o $@ $^
+$(GAME_LIB): $(GAME_OBJ_FILE)
+	ar rcs $@ $^
 
-$(GAME_LIB): $(GAME_OBJ) $(WEB_SRC)
-	@mkdir $(OBJ)/$(GAME_DIR)
-	@ar rcs $@ $^
+$(GAME_OBJ_FILE): $(GAME_SRC)
+	$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
 
+$(CLIENT_OBJ): $(CLIENT_SRC)
+	$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
 
-$(SERVER_TARGET): $(SERVER_SOURCE)
-	@mkdir $(OBJ)/$(WEB_DIR)
-	@$(CC) -o $@ $^
+$(SERVER_OBJ): $(SERVER_SRC)
+	$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
 
-$(CLIENT_TARGET): $(CLIENT_SOURCE)
-	@mkdir $(OBJ)/$(WEB_DIR)
-	@$(CC) -o $@ $^
+$(CLIENT_TARGET): $(CLIENT_OBJ) $(GAME_LIB)
+	$(CC) $(CFLAGS) $^ -o $@
 
--include $(GAME_DEPS)
+$(SERVER_TARGET): $(SERVER_OBJ) $(GAME_LIB)
+	$(CC) $(CFLAGS) $^ -o $@
 
 game:
-	@./$(SERVER_TARGET)
+	./$(SERVER_TARGET)
 
 player:
-	@./$(CLIENT_TARGET)
+	./$(CLIENT_TARGET)
+
+-include $(GAME_DEPS) $(CLIENT_DEPS) $(SERVER_DEPS)
 
 clean:
-	@rm $(GAME_OBJ)/*.o && rm $(GAME_OBJ)/*.a && rm $(GAME_OBJ)/*.d
-	@rm $(WEB_OBJ)/*.o
-	@rm $(OBJ)/*.o
+	rm -rf $(OBJ) $(CLIENT_TARGET) $(SERVER_TARGET)
