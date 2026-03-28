@@ -27,7 +27,7 @@ void player_thread(int socket)
             cout << "Соединение с игроком разорвано." << endl;
             break;
         }
-        if(WAIT_ACCEPT){
+        if(p_status == WAIT_ACCEPT){
             char c;
             do{
                 c = sscanf(a_msg, "%c", &c);
@@ -92,11 +92,12 @@ int main()
         if (status == PRE){
             cout << "DEBUG: Waiting for accept..." << endl; 
             ss_socket = accept(sm_socket, 0, 0);
-            thread ct(player_thread, ss_socket);
-            ct.detach();
+            //thread ct(player_thread, ss_socket);
+            //ct.detach();
             if (GAME->getPnum() == 6){
                 GAME->setStatus(FULL);
             }
+            cout << "DEBUG: accept SUCCESS! New socket: " << ss_socket << endl; 
         }
     }
     close(sm_socket);
