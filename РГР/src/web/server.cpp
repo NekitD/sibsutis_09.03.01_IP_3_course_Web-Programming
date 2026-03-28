@@ -1,3 +1,4 @@
+// СТАРТАП-СЕРВЕР
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -14,17 +15,40 @@ using namespace std;
 
 Game* GAME = new Game;
 
-
-void* player_thread(int socket)
+void player_thread(int socket)
 {
+    char s_msg[BUFF_LEN] = "";
+    char a_msg[BUFF_LEN] = "";
+    char request[10];
+    int p_status = WAIT_ACCEPT;
     for(;;){
-
+        bzero(s_msg, BUFF_LEN);
+        if (recv(socket, a_msg, BUFF_LEN, 0) == 0){
+            cout << "Соединение с игроком разорвано." << endl;
+            break;
+        }
+        if(WAIT_ACCEPT){
+            char c;
+            do{
+                c = sscanf(a_msg, "%c", &c);
+                strncat(request, a_msg, 1);
+            } while(c != '\0' && c != '|');
+            if (strncmp(request, "join", 4) == 0){
+                char nick[10];
+                do{
+                    c = sscanf(a_msg, "%c", &c);
+                    strncat(nick, a_msg, 1);
+                } while(c != '\0' && c != '|');
+                GAME->addPlayer(nick);
+                strcat(s_msg, "accepted");
+                send(socket, s_msg, BUFF_LEN, 0);
+                p_status = PRE_TO_PLAY;
+            }
+        }
     }
     close(socket);
     exit(0);
 }
-
-
 
 int main()
 {
@@ -60,35 +84,18 @@ int main()
         cout << "ОШИБКА: НЕ УДАЛОСЬ ОТКРЫТЬ ИГРУ!" << endl;
         return -1;
     }
+    GAME->setStatus(PRE);
     int status;
-    char msg[BUFF_LEN];
-    char request[10];
     for(;;)
     {
         status = GAME->getStatus();
         if (status == PRE){
-            if (recv(sm_socket, msg, BUFF_LEN, 0) < 0) {
-                continue;
-            }
-            char c;
-            do{
-                c = sscanf(msg, "%c", &c);
-                strncat(request, msg, 1);
-            } while(c != '\0' && c != '|');
-            if (strncmp(request, "join", 4) == 0){
-                char nick[10];
-                do{
-                    c = sscanf(msg, "%c", &c);
-                    strncat(nick, msg, 1);
-                } while(c != '\0' && c != '|');
-                ss_socket = accept(sm_socket, 0, 0);
-                if (ss_socket < 0) {
-                    cout << "НЕ УДАЛОСЬ ПРИНЯТЬ ИГРОКА!" << endl;
-                    continue;
-                }
-                GAME->addPlayer(nick);
-                thread ct(&player_thread, ss_socket);
-                ct.detach();
+            cout << "DEBUG: Waiting for accept..." << endl; 
+            ss_socket = accept(sm_socket, 0, 0);
+            thread ct(player_thread, ss_socket);
+            ct.detach();
+            if (GAME->getPnum() == 6){
+                GAME->setStatus(FULL);
             }
         }
     }
