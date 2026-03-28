@@ -15,6 +15,7 @@ using namespace std;
 int main()
 {
     pid_t server_id = getpid();
+    cout << "ID игры: " << server_id << endl;
     struct sockaddr_in s_addr;
     pthread_t ct;
     int sm_socket = socket(AF_INET, SOCK_STREAM, 0);
