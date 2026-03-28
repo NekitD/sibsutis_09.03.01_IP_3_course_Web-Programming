@@ -1,4 +1,4 @@
-#include <iostream>
+#include <stdio.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -12,12 +12,12 @@ using namespace std;
 
 int main()
 {
-    struct hostent *hp, *gethostbyname(char*);
+    struct hostent *hp;
 
     int c_sock = socket(AF_INET, SOCK_STREAM, 0);
 
-    struct sockaddr_in* c_addr = new struct sockaddr_in;
-    struct sockaddr_in* s_addr = new struct sockaddr_in;
+    struct sockaddr_in c_addr;
+    struct sockaddr_in s_addr;
 
     char g_host[BUFF_LEN] = "";
     int g_port = 0;
@@ -27,12 +27,12 @@ int main()
         return -1;
     }
 
-    bzero((char*)c_addr, (sizeof(struct sockaddr_in)));
-    c_addr->sin_family = AF_INET;
-    c_addr->sin_addr.s_addr = htonl(INADDR_ANY);
-    c_addr->sin_port = 0;
+    bzero((char*)&c_addr, (sizeof(struct sockaddr_in)));
+    c_addr.sin_family = AF_INET;
+    c_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+    c_addr.sin_port = 0;
     
-    if(bind(c_sock, c_addr, sizeof(struct sockaddr_in)) < 0){
+    if(bind(c_sock, (sockaddr*)&c_addr, sizeof(struct sockaddr_in)) < 0){
         cout << "НЕ УДАЛОСЬ ИНИЦИАЛИЗИРОВАТЬ КЛИЕНТА!" << endl;
         return -1;
     }
@@ -43,11 +43,11 @@ int main()
 
     hp = gethostbyname(g_host);
 
-    bzero((char*)s_addr, (sizeof(struct sockaddr_in)));
-    bcopy(hp->h_addr, &s_addr->sin_addr, hp->h_length) ;
-    s_addr->sin_port = htons(g_port);
+    bzero((char*)&s_addr, (sizeof(struct sockaddr_in)));
+    bcopy(hp->h_addr, &s_addr.sin_addr, hp->h_length) ;
+    s_addr.sin_port = htons(g_port);
 
-        if (connect(c_sock, s_addr, sizeof(struct sockaddr_in)) < 0) {
+        if (connect(c_sock, (sockaddr*)&s_addr, sizeof(struct sockaddr_in)) < 0) {
         printf("CONNECTION TO SERVER FAILED!\n");
         return -1;
     }

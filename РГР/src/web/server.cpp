@@ -30,12 +30,12 @@ int main()
     s_addr.sin_addr.s_addr = htonl(INADDR_ANY);
     s_addr.sin_port = 0;
 
-    if(bind(sm_socket, &s_addr, sizeof(struct sockaddr_in)) < 0){
+    if(bind(sm_socket, (sockaddr*)&s_addr, sizeof(struct sockaddr_in)) < 0){
         cout << "ОШИБКА: НЕ УДАЛОСЬ ИНИЦИАЛИЗИРОВАТЬ ИГРУ!" << endl;
         return -1;
     }
     unsigned int s_len = sizeof(struct sockaddr_in);
-    if (getsockname(sm_socket, &s_addr, &s_len) < 0){
+    if (getsockname(sm_socket, (sockaddr*)&s_addr, &s_len) < 0){
         cout << "ОШИБКА: НЕ УДАЛОСЬ НАЙТИ ПОРТ ИГРЫ!" << endl;
         return -1;
     }
