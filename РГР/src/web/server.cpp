@@ -67,7 +67,6 @@ int main()
         status = GAME->getStatus();
         if (status == PRE){
             if (recv(sm_socket, msg, BUFF_LEN, 0) < 0) {
-                cout << "НЕ УДАЛОСЬ ПОЛУЧИТЬ СООБЩЕНИЕ!" << endl;
                 continue;
             }
             char c;
