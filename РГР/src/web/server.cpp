@@ -49,7 +49,7 @@ int main()
         return -1;
     }
     unsigned int s_len = sizeof(struct sockaddr_in);
-    if (getsockname(sm_socket, (sockaddr*)&s_addr, &s_len) < 0){
+    if (getsockname(sm_socket, (struct sockaddr*)&s_addr, &s_len) < 0){
         cout << "ОШИБКА: НЕ УДАЛОСЬ НАЙТИ ПОРТ ИГРЫ!" << endl;
         return -1;
     }
@@ -81,7 +81,8 @@ int main()
                     strncat(nick, msg, 1);
                 } while(c != '\0' && c != '|');
                 GAME->addPlayer(nick);
-                ss_socket = socket(AF_INET, SOCK_STREAM, 0);
+                unsigned int len = sizeof(struct sockaddr_in);
+                ss_socket = accept(sm_socket, (struct sockaddr*)&s_addr, &len);
                 thread ct(&player_thread, ss_socket);
                 ct.detach();
             }
