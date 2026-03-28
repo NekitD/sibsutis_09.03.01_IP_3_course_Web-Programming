@@ -1,3 +1,4 @@
+//СТАРТАП-БИБЛИОТЕКА
 #include "game.h"
 
 int encode_msg(char* msg, int& status, int len){
@@ -25,7 +26,7 @@ ostream& operator<<(ostream& os, const Player& p){
 
 
 Player::Player(string _name, int _id): name(_name), score(0), p_profs(new vector<Card*>) , 
-            p_skills(new vector<Card*>), p_emoji(nullptr), id(_id), status(PRE_TO_PLAY){};
+            p_skills(new vector<Card*>), p_emoji(nullptr), id(_id), status(WAIT_ACCEPT){};
 
 Player::~Player(){};
 
@@ -338,4 +339,8 @@ void Game::addPlayer(char* nick){
     g_players->push_back(p);
     p_num++;
     cout << nick << "присоединился к игре!" << endl;
+}
+
+int Game::getPnum(){
+    return p_num;
 }
